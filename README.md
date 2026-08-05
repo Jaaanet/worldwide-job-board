@@ -1,3 +1,5 @@
+The main source code is the React/Next version under `app/`.
+The `github-pages/` folder contains a static export used for simple public hosting.
 # vinext-starter
 
 A clean full-stack starter running on
