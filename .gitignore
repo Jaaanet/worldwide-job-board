@@ -1,0 +1,29 @@
+# dependencies
+node_modules/
+
+# build outputs
+dist/
+.next/
+.vinext/
+out/
+coverage/
+
+# local runtime and deployment state
+.wrangler/
+.openai/
+work/
+outputs/
+
+# environment and secrets
+.env
+.env.*
+*.pem
+
+# OS/editor noise
+.DS_Store
+.Rhistory
+.RData
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*

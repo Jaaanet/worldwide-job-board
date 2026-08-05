@@ -1,67 +1,98 @@
-# Worldwide Job Board Directory
+# vinext-starter
 
-A searchable directory of worldwide job-search websites, including global job boards, regional job platforms, remote-work sites, startup job boards, university/campus career portals, and freelance marketplaces.
+A clean full-stack starter running on
+[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
+Drizzle support.
 
-## Live Demo
+## Prerequisites
 
-[View the live website](https://Jaaanet.github.io/worldwide-job-board/)
+- Node.js `>=22.13.0`
 
-## Project Overview
+## Quick Start
 
-Job postings are spread across many different platforms. Large job boards such as LinkedIn and Indeed are useful, but they do not always cover every country, university, niche industry, or early-career opportunity equally.
+```bash
+npm install
+npm run dev
+npm run build
+```
 
-This project organizes job-search websites into one searchable directory so users can discover more places to search for jobs, internships, co-ops, remote roles, freelance work, and campus opportunities.
+This starter does not use `wrangler.jsonc`.
 
-The directory intentionally includes overlapping sources because different platforms may contain different postings.
+## Included Shape
 
-## Features
+- edit site code under `app/`
+- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
+- `vite.config.ts` simulates declared bindings for local development
+- `db/schema.ts` starts intentionally empty
+- `examples/d1/` contains an optional D1 example surface
+- `drizzle.config.ts` supports local migration generation when needed
 
-- Search job-search websites by keyword
-- Filter websites by region
-- Filter websites by focus area:
-  - General job boards
-  - Remote jobs
-  - Tech jobs
-  - Startup jobs
-  - Campus/university jobs
-  - Freelance marketplaces
-  - Company research platforms
-- Region-aware filtering for global platforms
-- Global job boards only appear under a region when they have relevant coverage for that region
-- Direct links to each job-search website
-- Fully static website
-- Deployable for free with GitHub Pages
+## Workspace Auth Headers
 
-## Why I Built This
+OpenAI workspace sites can read the current user's email from
+`oai-authenticated-user-email`.
 
-During the job search process, I noticed that relying on only one or two large job boards can cause candidates to miss opportunities. Some jobs are posted only on university portals, regional platforms, government job banks, startup networks, or freelance marketplaces.
+SIWC-authenticated workspace sites may also receive
+`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
+`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
+`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
 
-I built this project to make job-source discovery easier and more systematic.
+Treat the full name as optional and fall back to email when it is absent:
 
-## Tech Stack
+```tsx
+import { headers } from "next/headers";
 
-- HTML
-- CSS
-- JavaScript
-- GitHub Pages
+export default async function Home() {
+  const requestHeaders = await headers();
+  const email = requestHeaders.get("oai-authenticated-user-email");
+  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
+  const fullName =
+    encodedFullName &&
+    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
+      "percent-encoded-utf-8"
+      ? decodeURIComponent(encodedFullName)
+      : null;
 
-## How It Works
+  const displayName = fullName ?? email;
+  // ...
+}
+```
 
-The website stores job-search platforms as structured data in JavaScript. Each platform includes information such as:
+## Optional Dispatch-Owned ChatGPT Sign-In
 
-- Website name
-- URL
-- Region
-- Coverage regions
-- Focus category
-- Platform type
-- Notes about best use cases
+Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
+optional or required ChatGPT sign-in:
 
-The filtering logic checks both the selected region and the platform's coverage. For example, a platform marked as `Global` will not automatically appear under every region. It only appears when that region is included in its coverage list.
+- Use `getChatGPTUser()` for optional signed-in UI.
+- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
+  anonymous visitors through Sign in with ChatGPT.
+- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
+  browser links or actions.
+- Pass a same-origin relative `returnTo` path for the destination after sign-in
+  or sign-out. The helper validates and safely encodes it.
+- Mark protected pages with `export const dynamic = "force-dynamic"` because
+  they depend on per-request identity headers.
 
-## Project Structure
+Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
+OAuth cookies, and identity header injection. Do not implement app routes for
+those reserved paths. Routes that do not import and call the helper remain
+anonymous-compatible.
 
-```text
-worldwide-job-board/
-├── index.html
-└── README.md
+SIWC establishes identity only; it does not prove workspace membership. Use the
+Sites hosting platform's access policy controls for workspace-wide restrictions,
+or enforce explicit server-side membership or allowlist checks.
+
+Use SIWC for account pages, user-specific dashboards, saved records, and write
+actions tied to the current ChatGPT user. Leave public content anonymous.
+
+## Useful Commands
+
+- `npm run dev`: start local development
+- `npm run build`: verify the vinext build output
+- `npm test`: build the starter and verify its rendered loading skeleton
+- `npm run db:generate`: generate Drizzle migrations after schema changes
+
+## Learn More
+
+- [vinext Documentation](https://github.com/cloudflare/vinext)
+- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
