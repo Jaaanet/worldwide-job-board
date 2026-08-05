@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Worldwide Job Board Directory</title>
+    <meta
+      name="description"
+      content="A searchable public directory of worldwide job-search websites, including regional, global, remote, campus, startup, and freelance job boards."
+    />
+    <style>
+      :root {
+        --background: #f7f5ef;
+        --foreground: #17211c;
+        --muted: #66736b;
+        --panel: #ffffff;
+        --panel-soft: #eef3f0;
+        --line: #d7ddd8;
+        --accent: #0f766e;
+        --accent-dark: #134e4a;
+        --amber-soft: #f4eadb;
+        --rose-soft: #f4e5e8;
+        --shadow: 0 18px 45px rgba(23, 33, 28, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background:
+          linear-gradient(120deg, rgba(15, 118, 110, 0.12), transparent 32rem),
+          linear-gradient(260deg, rgba(208, 139, 31, 0.14), transparent 30rem),
+          var(--background);
+        color: var(--foreground);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      .hero {
+        min-height: 54vh;
+        display: flex;
+        align-items: center;
+        padding: 72px 24px 40px;
+      }
+
+      .hero__inner,
+      .section,
+      .directory {
+        width: min(1180px, calc(100% - 48px));
+        margin: 0 auto;
+      }
+
+      .hero__inner {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        gap: 32px;
+        align-items: end;
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        color: var(--accent-dark);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 18px;
+        font-size: clamp(3rem, 8vw, 6.7rem);
+        line-height: 0.94;
+        letter-spacing: 0;
+        max-width: 980px;
+      }
+
+      .hero__lead {
+        max-width: 720px;
+        margin-bottom: 0;
+        color: #33443a;
+        font-size: clamp(1.05rem, 2vw, 1.32rem);
+        line-height: 1.55;
+      }
+
+      .hero__panel {
+        background: rgba(255, 255, 255, 0.86);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 18px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .hero__panel div {
+        min-height: 82px;
+        padding: 14px;
+        border-radius: 6px;
+        background: var(--panel-soft);
+      }
+
+      .hero__panel strong {
+        display: block;
+        font-size: 2rem;
+        line-height: 1;
+      }
+
+      .hero__panel span {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .section {
+        padding: 28px 0 44px;
+      }
+
+      h2 {
+        margin-bottom: 0;
+        font-size: clamp(1.8rem, 3vw, 2.7rem);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      .featured-grid {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .featured-link {
+        min-height: 96px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        text-decoration: none;
+      }
+
+      .featured-link span {
+        font-weight: 800;
+      }
+
+      .featured-link small {
+        color: var(--muted);
+      }
+
+      .directory {
+        padding: 28px 0 76px;
+      }
+
+      .directory__toolbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        align-items: end;
+        margin-bottom: 18px;
+      }
+
+      .result-count {
+        flex: 0 0 auto;
+        margin: 0;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .filters {
+        position: sticky;
+        top: 0;
+        z-index: 4;
+        display: grid;
+        grid-template-columns: minmax(260px, 1fr) 210px 190px auto;
+        gap: 10px;
+        align-items: end;
+        padding: 12px;
+        margin-bottom: 18px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(247, 245, 239, 0.95);
+        backdrop-filter: blur(14px);
+      }
+
+      label {
+        display: grid;
+        gap: 6px;
+      }
+
+      label span {
+        color: var(--muted);
+        font-size: 0.84rem;
+        font-weight: 800;
+      }
+
+      input,
+      select {
+        width: 100%;
+        height: 44px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: white;
+        color: var(--foreground);
+        padding: 0 12px;
+        outline: none;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+      }
+
+      .clear-button {
+        height: 44px;
+        border: 0;
+        border-radius: 6px;
+        background: var(--accent-dark);
+        color: white;
+        padding: 0 18px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .board-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .board-card {
+        min-height: 252px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.92);
+        padding: 18px;
+      }
+
+      .board-card__top {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: start;
+      }
+
+      .board-card__region {
+        margin-bottom: 6px;
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .board-card h3 {
+        margin-bottom: 0;
+        font-size: 1.2rem;
+        line-height: 1.2;
+      }
+
+      .board-card__top a {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 58px;
+        height: 34px;
+        border-radius: 6px;
+        background: #e8f4f1;
+        color: var(--accent-dark);
+        text-decoration: none;
+        font-weight: 800;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tags span {
+        border-radius: 999px;
+        background: var(--amber-soft);
+        color: #69460f;
+        padding: 5px 10px;
+        font-size: 0.78rem;
+        font-weight: 800;
+      }
+
+      .tags span:nth-child(2) {
+        background: var(--rose-soft);
+        color: #71313b;
+      }
+
+      .tags span:nth-child(3) {
+        background: #e8f4f1;
+        color: var(--accent-dark);
+      }
+
+      .board-card p {
+        margin-bottom: 0;
+        color: #2c3b32;
+        line-height: 1.45;
+      }
+
+      .board-card small {
+        margin-top: auto;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      @media (max-width: 980px) {
+        .hero__inner {
+          grid-template-columns: 1fr;
+        }
+
+        .hero__panel {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .featured-grid,
+        .board-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .filters {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .search-field {
+          grid-column: 1 / -1;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .hero {
+          min-height: auto;
+          padding: 48px 16px 28px;
+        }
+
+        .hero__inner,
+        .section,
+        .directory {
+          width: min(100% - 28px, 1180px);
+        }
+
+        .hero__panel,
+        .featured-grid,
+        .board-grid,
+        .filters {
+          grid-template-columns: 1fr;
+        }
+
+        .directory__toolbar {
+          display: block;
+        }
+
+        .result-count {
+          margin-top: 10px;
+        }
+
+        .board-card {
+          min-height: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div class="hero__inner">
+          <div>
+            <p class="eyebrow">Worldwide job-search map</p>
+            <h1>A world wide job search websites.</h1>
+            <p class="hero__lead">
+              A practical directory of job boards, aggregators, remote-work sites,
+              startup networks, campus portals, freelance marketplaces, and regional
+              career sites, including overlapping sources so fewer niche postings slip by.
+            </p>
+          </div>
+          <div class="hero__panel" aria-label="Directory summary">
+            <div><strong id="site-count">0</strong><span>sites listed</span></div>
+            <div><strong id="region-count">0</strong><span>regions</span></div>
+            <div><strong id="focus-count">0</strong><span>search focuses</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="featured-title">
+        <p class="eyebrow">Start here</p>
+        <h2 id="featured-title">Core websites most job searches should check</h2>
+        <div class="featured-grid" id="featured-grid"></div>
+      </section>
+
+      <section class="directory" aria-labelledby="directory-title">
+        <div class="directory__toolbar">
+          <div>
+            <p class="eyebrow">Directory</p>
+            <h2 id="directory-title">Find the right job board</h2>
+          </div>
+          <p class="result-count" id="result-count">0 matching sites</p>
+        </div>
+
+        <div class="filters" aria-label="Directory filters">
+          <label class="search-field">
+            <span>Search</span>
+            <input id="search" type="search" placeholder="Try remote, Canada, startup, data, freelance..." />
+          </label>
+          <label>
+            <span>Region</span>
+            <select id="region"></select>
+          </label>
+          <label>
+            <span>Focus</span>
+            <select id="focus"></select>
+          </label>
+          <button class="clear-button" id="reset" type="button">Reset</button>
+        </div>
+
+        <div class="board-grid" id="board-grid"></div>
+      </section>
+    </main>
+
+    <script>
+      const regionOrder = [
+        "All",
+        "Global",
+        "United States",
+        "Canada",
+        "United Kingdom",
+        "Europe",
+        "Australia",
+        "India",
+        "Asia Pacific",
+        "China",
+        "Middle East",
+        "Africa",
+        "Latin America",
+      ];
+
+      const focusOrder = ["All", "General", "Remote", "Tech", "Startup", "Campus", "Freelance", "Company research"];
+
+      const broadCoverage = [
+        "United States",
+        "Canada",
+        "United Kingdom",
+        "Europe",
+        "Australia",
+        "India",
+        "Asia Pacific",
+        "Middle East",
+        "Africa",
+        "Latin America",
+      ];
+
+      const jobBoards = [
+        ["LinkedIn Jobs", "https://www.linkedin.com/jobs/", "Global", broadCoverage, "General", "Network", "Large employers, networking, recruiter discovery, alumni searches.", "Best when your profile is polished and you want recruiter visibility."],
+        ["Indeed", "https://www.indeed.com/", "Global", broadCoverage, "General", "Aggregator", "High-volume job search across industries and experience levels.", "Use country-specific Indeed domains for better local results."],
+        ["Glassdoor", "https://www.glassdoor.com/Job/", "Global", ["United States", "Canada", "United Kingdom", "Europe", "Australia", "India"], "General", "Research", "Combining job listings with company reviews and salary research.", "Useful before interviews and offer negotiation."],
+        ["Google Jobs", "https://www.google.com/search?q=jobs+near+me", "Global", broadCoverage, "General", "Aggregator", "Fast discovery from many boards and company career pages.", "Search from Google with role plus location, for example: data analyst Canada jobs."],
+        ["ZipRecruiter", "https://www.ziprecruiter.com/", "United States", [], "General", "Aggregator", "US roles, quick applications, job alerts, and broad employer coverage.", "Strong for business, operations, service, and tech roles in the US."],
+        ["Monster", "https://www.monster.com/", "Global", ["United States", "Canada", "United Kingdom", "Europe", "India"], "General", "Job board", "Traditional job search, resume posting, and alerts.", "Check local Monster sites where available."],
+        ["CareerBuilder", "https://www.careerbuilder.com/", "United States", [], "General", "Job board", "US corporate, administrative, operations, and technical roles.", "Helpful for broad searches outside only tech."],
+        ["SimplyHired", "https://www.simplyhired.com/", "United States", [], "General", "Aggregator", "Broad job discovery and salary browsing.", "Good for checking whether roles are duplicated across boards."],
+        ["Talent.com", "https://www.talent.com/", "Global", broadCoverage, "General", "Aggregator", "International job search with country-level coverage.", "Useful when comparing similar roles across countries."],
+        ["Jooble", "https://jooble.org/", "Global", broadCoverage, "General", "Aggregator", "Global job aggregation, including smaller regional boards.", "Search by country or city to reduce noise."],
+        ["Jora", "https://www.jora.com/", "Global", ["Canada", "United Kingdom", "Australia", "India", "Asia Pacific"], "General", "Aggregator", "International job search with strong APAC coverage.", "Owned by SEEK and often useful outside North America."],
+        ["Adzuna", "https://www.adzuna.com/", "Global", ["United States", "Canada", "United Kingdom", "Europe", "Australia"], "General", "Aggregator", "Salary-aware searches and market snapshots.", "Good when you want compensation signals while searching."],
+        ["Handshake", "https://joinhandshake.com/students/", "Global", ["United States", "Canada", "United Kingdom", "Europe"], "Campus", "Campus network", "Students, recent graduates, internships, co-ops, entry-level jobs, and campus recruiting events.", "Many universities use Handshake; access can depend on your school account."],
+        ["Symplicity CSM", "https://www.symplicity.com/uk/csm", "Global", ["United States", "Canada", "United Kingdom", "Europe", "Australia", "Asia Pacific"], "Campus", "Campus platform", "University career-center job boards, employer postings, appointments, fairs, and internship workflows.", "Often appears under a university-branded career portal rather than the Symplicity name."],
+        ["12twenty", "https://12twenty.com/", "Global", ["United States", "Canada", "United Kingdom", "Europe"], "Campus", "Campus platform", "Early-career hiring through undergraduate, MBA, law, and alumni career programs.", "Used by many school career centers and employer recruiting teams."],
+        ["GradConnection", "https://au.gradconnection.com/", "Global", ["Australia", "India", "Asia Pacific"], "Campus", "Graduate board", "Graduate programs, internships, and student roles across multiple countries.", "Especially useful for students and new graduates in APAC and international programs."],
+        ["FlexJobs", "https://www.flexjobs.com/", "Global", broadCoverage, "Remote", "Curated", "Remote, hybrid, part-time, freelance, and flexible roles.", "Curated listings; some features require a paid plan."],
+        ["We Work Remotely", "https://weworkremotely.com/", "Global", broadCoverage, "Remote", "Job board", "Remote tech, design, product, marketing, support, and operations roles.", "Best for remote-first searching without location-heavy noise."],
+        ["Remote OK", "https://remoteok.com/", "Global", broadCoverage, "Remote", "Job board", "Remote technology, product, marketing, and startup roles.", "Has a public API, useful for automation prototypes."],
+        ["Remotive", "https://remotive.com/", "Global", broadCoverage, "Remote", "Job board", "Remote roles with a clean public API for searching.", "A practical source for scripts and prototypes."],
+        ["Remote.co", "https://remote.co/remote-jobs/", "Global", broadCoverage, "Remote", "Job board", "Remote jobs and remote-work company research.", "Good for curated remote listings and career advice."],
+        ["Himalayas", "https://himalayas.app/jobs", "Global", broadCoverage, "Remote", "Job board", "Remote tech roles with company profiles and salary filters.", "Useful for transparent remote company research."],
+        ["Wellfound", "https://wellfound.com/jobs", "Global", ["United States", "Canada", "United Kingdom", "Europe", "India", "Asia Pacific", "Latin America"], "Startup", "Network", "Startup jobs, founder contact, salary, and equity transparency.", "Strong for engineering, product, design, sales, and operations."],
+        ["YC Work at a Startup", "https://www.ycombinator.com/jobs", "Global", broadCoverage, "Startup", "Job board", "Roles at Y Combinator startups.", "Good for early-stage startup searches."],
+        ["Otta", "https://app.otta.com/", "Global", ["United States", "Canada", "United Kingdom", "Europe"], "Tech", "Matching", "Curated technology-company matching and role discovery.", "Useful when you prefer matching over keyword-only searching."],
+        ["Dice", "https://www.dice.com/", "United States", [], "Tech", "Job board", "US technology jobs, contract roles, and recruiter discovery.", "Strong for software, data, infrastructure, and IT roles."],
+        ["Built In", "https://builtin.com/jobs", "United States", [], "Tech", "Job board", "US tech-company roles, especially in major startup hubs.", "Good for comparing tech company benefits and culture."],
+        ["The Muse", "https://www.themuse.com/search/", "United States", [], "Company research", "Research", "Company profiles, culture research, and curated roles.", "Helpful when company fit matters as much as role title."],
+        ["Eluta", "https://www.eluta.ca/", "Canada", [], "General", "Aggregator", "Canadian jobs, especially employer career-site postings.", "Great supplement to LinkedIn and Indeed in Canada."],
+        ["Job Bank Canada", "https://www.jobbank.gc.ca/", "Canada", [], "General", "Government", "Canadian roles, labor-market information, and verified employers.", "Good for location-specific Canadian searches."],
+        ["WorkBC", "https://www.workbc.ca/search-and-prepare-job/find-jobs", "Canada", [], "General", "Government", "British Columbia jobs and career resources.", "Useful if you are searching near Vancouver or elsewhere in BC."],
+        ["UBC CareersOnline", "https://students.ubc.ca/career/campus-jobs/", "Canada", [], "Campus", "University portal", "UBC student jobs, Work Learn roles, volunteer opportunities, internships, and alumni postings.", "Some postings require UBC CWL login; UBC also lists campus hiring programs and units."],
+        ["University of Toronto CLNx", "https://clnx.utoronto.ca/", "Canada", [], "Campus", "University portal", "University of Toronto student jobs, internships, events, appointments, and experiential learning.", "Best for U of T students and alumni with access to the CLNx system."],
+        ["WaterlooWorks", "https://uwaterloo.ca/hire/recruit-waterloo/co-operative-education/co-op-hiring-process/waterlooworks", "Canada", [], "Campus", "University portal", "University of Waterloo co-op jobs, interviews, rankings, and employer recruiting.", "A major source for Waterloo co-op opportunities; student access is school-managed."],
+        ["McGill myFuture", "https://www.mcgill.ca/caps/students/services/myfuture", "Canada", [], "Campus", "University portal", "McGill student and alumni job postings, events, advising, and career resources.", "Useful for McGill students and alumni; access usually requires institutional login."],
+        ["SFU myExperience", "https://www.sfu.ca/students/career.html", "Canada", [], "Campus", "University portal", "Simon Fraser University student opportunities, co-op, career events, and advising.", "Use alongside SFU faculty and co-op pages for program-specific roles."],
+        ["Western Connect", "https://www.uwo.ca/careers/", "Canada", [], "Campus", "University portal", "Western University student jobs, career appointments, employer events, and campus opportunities.", "Good for Western students and alumni searching school-mediated postings."],
+        ["University of Alberta campusBRIDGE", "https://www.ualberta.ca/en/career-centre/index.html", "Canada", [], "Campus", "University portal", "University of Alberta career postings, advising, employer events, and experiential learning resources.", "Campus-specific listings may require student or alumni login."],
+        ["Reed", "https://www.reed.co.uk/jobs", "United Kingdom", [], "General", "Job board", "UK jobs across industries and experience levels.", "Includes permanent, contract, temporary, and part-time roles."],
+        ["Totaljobs", "https://www.totaljobs.com/", "United Kingdom", [], "General", "Job board", "UK job search across many sectors.", "Part of The Stepstone Group."],
+        ["CV-Library", "https://www.cv-library.co.uk/", "United Kingdom", [], "General", "Job board", "UK roles, CV posting, and recruiter contact.", "Useful for both office and technical roles."],
+        ["StepStone", "https://www.stepstone.com/", "Europe", [], "General", "Job board", "European job search through StepStone country sites.", "Especially relevant in Germany, Belgium, Austria, and nearby markets."],
+        ["Xing Jobs", "https://www.xing.com/jobs", "Europe", [], "General", "Network", "German-speaking professional networking and job search.", "Useful for Germany, Austria, and Switzerland."],
+        ["EURES", "https://eures.europa.eu/index_en", "Europe", [], "General", "Government", "European Union job mobility and cross-border work.", "Helpful for EU/EEA job-search research."],
+        ["SEEK", "https://www.seek.com.au/", "Australia", [], "General", "Job board", "Australia and New Zealand job search.", "One of the strongest boards for Australia."],
+        ["Naukri", "https://www.naukri.com/", "India", [], "General", "Job board", "India jobs across tech, business, data, and operations.", "One of India's biggest mainstream job boards."],
+        ["Instahyre", "https://www.instahyre.com/", "India", [], "Tech", "Matching", "Technology-company hiring and recruiter matching in India.", "Good for software, data, and product roles."],
+        ["JobStreet", "https://www.jobstreet.com/", "Asia Pacific", [], "General", "Job board", "Southeast Asia job search.", "Strong in Singapore, Malaysia, Philippines, and nearby markets."],
+        ["JobsDB", "https://hk.jobsdb.com/", "Asia Pacific", [], "General", "Job board", "Hong Kong and Asia Pacific roles.", "Part of the SEEK ecosystem."],
+        ["Wanted", "https://www.wanted.co.kr/", "Asia Pacific", [], "Tech", "Matching", "Korea technology and startup roles.", "Useful for Korea-focused tech searches."],
+        ["51job", "https://www.51job.com/", "China", [], "General", "Job board", "China jobs across industries.", "Use Chinese keywords for best results."],
+        ["Zhaopin", "https://www.zhaopin.com/", "China", [], "General", "Job board", "China roles, graduate jobs, and corporate recruiting.", "Useful for Mandarin-language job search."],
+        ["BOSS Zhipin", "https://www.zhipin.com/", "China", [], "General", "Network", "Direct chat with recruiters and hiring managers in China.", "Often works more like a recruiting chat platform."],
+        ["Bayt", "https://www.bayt.com/", "Middle East", [], "General", "Job board", "Middle East and North Africa job search.", "Strong for Gulf-region roles."],
+        ["GulfTalent", "https://www.gulftalent.com/", "Middle East", [], "General", "Job board", "Professional roles in the Gulf region.", "Useful for UAE, Saudi Arabia, Qatar, and nearby markets."],
+        ["PNet", "https://www.pnet.co.za/", "Africa", [], "General", "Job board", "South Africa job search.", "Good regional board for professional roles."],
+        ["Careers24", "https://www.careers24.com/", "Africa", [], "General", "Job board", "South African jobs across sectors.", "Useful alongside LinkedIn and PNet."],
+        ["Bumeran", "https://www.bumeran.com/", "Latin America", [], "General", "Job board", "Latin America job search.", "Coverage varies by country; use local Spanish keywords."],
+        ["Computrabajo", "https://www.computrabajo.com/", "Latin America", [], "General", "Job board", "Latin America roles across industries.", "Good for broad regional searches."],
+        ["InfoJobs", "https://www.infojobs.net/", "Europe", [], "General", "Job board", "Spain-focused job search.", "Useful for Spanish-language postings."],
+        ["Upwork", "https://www.upwork.com/", "Global", broadCoverage, "Freelance", "Marketplace", "Freelance contracts across tech, design, writing, data, and business.", "Best when you can package your skills into services; country and payment restrictions can apply."],
+        ["Toptal", "https://www.toptal.com/", "Global", broadCoverage, "Freelance", "Marketplace", "Vetted freelance technology, design, product, and finance work.", "More selective than general freelance platforms; availability can vary by client, role, and country."],
+        ["Contra", "https://contra.com/", "Global", broadCoverage, "Freelance", "Marketplace", "Independent portfolio-based freelance work.", "Good for design, creative, no-code, writing, and product services; payment access can vary by country."],
+      ].map(([name, url, region, coverageRegions, focus, type, goodFor, notes]) => ({
+        name,
+        url,
+        region,
+        coverageRegions,
+        focus,
+        type,
+        goodFor,
+        notes,
+      }));
+
+      const state = {
+        query: "",
+        region: "All",
+        focus: "All",
+      };
+
+      const searchInput = document.getElementById("search");
+      const regionSelect = document.getElementById("region");
+      const focusSelect = document.getElementById("focus");
+      const boardGrid = document.getElementById("board-grid");
+      const featuredGrid = document.getElementById("featured-grid");
+      const resultCount = document.getElementById("result-count");
+
+      const regions = regionOrder.filter((item) => item === "All" || jobBoards.some((board) => board.region === item));
+      const focuses = focusOrder.filter((item) => item === "All" || jobBoards.some((board) => board.focus === item));
+
+      document.getElementById("site-count").textContent = jobBoards.length;
+      document.getElementById("region-count").textContent = regions.length - 1;
+      document.getElementById("focus-count").textContent = focuses.length - 1;
+
+      regionSelect.innerHTML = regions.map((item) => `<option>${item}</option>`).join("");
+      focusSelect.innerHTML = focuses.map((item) => `<option>${item}</option>`).join("");
+
+      featuredGrid.innerHTML = jobBoards
+        .filter((board) => ["LinkedIn Jobs", "Indeed", "Glassdoor", "Wellfound", "We Work Remotely", "SEEK"].includes(board.name))
+        .map(
+          (board) => `
+            <a class="featured-link" href="${board.url}" target="_blank" rel="noreferrer">
+              <span>${board.name}</span>
+              <small>${board.focus} · ${board.region}</small>
+            </a>
+          `,
+        )
+        .join("");
+
+      function matchesRegion(board) {
+        return (
+          state.region === "All" ||
+          board.region === state.region ||
+          (board.region === "Global" && state.region !== "Global" && board.coverageRegions.includes(state.region))
+        );
+      }
+
+      function render() {
+        const normalizedQuery = state.query.trim().toLowerCase();
+        const filtered = jobBoards.filter((board) => {
+          const searchable = [board.name, board.region, board.focus, board.type, board.goodFor, board.notes].join(" ").toLowerCase();
+          return matchesRegion(board) && (state.focus === "All" || board.focus === state.focus) && (!normalizedQuery || searchable.includes(normalizedQuery));
+        });
+
+        resultCount.textContent = `${filtered.length} matching site${filtered.length === 1 ? "" : "s"}`;
+        boardGrid.innerHTML = filtered
+          .map((board) => {
+            const coverageTag =
+              state.region !== "All" && board.region === "Global" && board.coverageRegions.includes(state.region)
+                ? `<span>Covers ${state.region}</span>`
+                : "";
+            return `
+              <article class="board-card">
+                <div class="board-card__top">
+                  <div>
+                    <p class="board-card__region">${board.region}</p>
+                    <h3>${board.name}</h3>
+                  </div>
+                  <a href="${board.url}" target="_blank" rel="noreferrer" aria-label="Open ${board.name}">Visit</a>
+                </div>
+                <div class="tags">
+                  <span>${board.focus}</span>
+                  <span>${board.type}</span>
+                  ${coverageTag}
+                </div>
+                <p>${board.goodFor}</p>
+                <small>${board.notes}</small>
+              </article>
+            `;
+          })
+          .join("");
+      }
+
+      searchInput.addEventListener("input", (event) => {
+        state.query = event.target.value;
+        render();
+      });
+
+      regionSelect.addEventListener("change", (event) => {
+        state.region = event.target.value;
+        render();
+      });
+
+      focusSelect.addEventListener("change", (event) => {
+        state.focus = event.target.value;
+        render();
+      });
+
+      document.getElementById("reset").addEventListener("click", () => {
+        state.query = "";
+        state.region = "All";
+        state.focus = "All";
+        searchInput.value = "";
+        regionSelect.value = "All";
+        focusSelect.value = "All";
+        render();
+      });
+
+      render();
+    </script>
+  </body>
+</html>
