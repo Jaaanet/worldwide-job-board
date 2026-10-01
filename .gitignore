@@ -11,6 +11,8 @@ coverage/
 # local runtime and deployment state
 .wrangler/
 .openai/
+!.openai/
+!.openai/hosting.json
 work/
 outputs/
 

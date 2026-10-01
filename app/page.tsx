@@ -640,6 +640,15 @@ const jobBoards = [
     notes: "Often works more like a recruiting chat platform.",
   },
   {
+    name: "猎聘 Liepin",
+    url: "https://www.liepin.com/",
+    region: "China",
+    focus: "General",
+    type: "Job board",
+    goodFor: "China professional roles, mid-to-senior hiring, campus listings, and recruiter/headhunter contact.",
+    notes: "Use Chinese keywords and city filters for best results; mobile and login flows may show different listings.",
+  },
+  {
     name: "Bayt",
     url: "https://www.bayt.com/",
     region: "Middle East",
