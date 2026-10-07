@@ -210,7 +210,7 @@ h2 {
   top: 0;
   z-index: 4;
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) 210px 190px auto;
+  grid-template-columns: minmax(260px, 1fr) 210px auto;
   gap: 10px;
   align-items: end;
   padding: 12px;
@@ -360,7 +360,7 @@ select:focus {
   }
 
   .hero__panel {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .featured-grid,

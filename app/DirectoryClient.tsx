@@ -33,30 +33,13 @@ const regionOrder = [
   "Latin America",
 ];
 
-const focusOrder = [
-  "All",
-  "General",
-  "Remote",
-  "Tech",
-  "Startup",
-  "Campus",
-  "Freelance",
-  "Company research",
-];
-
 export function DirectoryClient({ jobBoards }: DirectoryClientProps) {
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState("All");
-  const [focus, setFocus] = useState("All");
 
   const regions = useMemo(() => {
     const found = new Set(jobBoards.map((board) => board.region));
     return regionOrder.filter((item) => item === "All" || found.has(item));
-  }, [jobBoards]);
-
-  const focuses = useMemo(() => {
-    const found = new Set(jobBoards.map((board) => board.focus));
-    return focusOrder.filter((item) => item === "All" || found.has(item));
   }, [jobBoards]);
 
   const filteredBoards = useMemo(() => {
@@ -66,7 +49,6 @@ export function DirectoryClient({ jobBoards }: DirectoryClientProps) {
         region === "All" ||
         board.region === region ||
         (board.region === "Global" && region !== "Global" && Boolean(board.coverageRegions?.includes(region)));
-      const matchesFocus = focus === "All" || board.focus === focus;
       const searchable = [
         board.name,
         board.region,
@@ -78,9 +60,9 @@ export function DirectoryClient({ jobBoards }: DirectoryClientProps) {
         .join(" ")
         .toLowerCase();
       const matchesQuery = !normalizedQuery || searchable.includes(normalizedQuery);
-      return matchesRegion && matchesFocus && matchesQuery;
+      return matchesRegion && matchesQuery;
     });
-  }, [focus, jobBoards, query, region]);
+  }, [jobBoards, query, region]);
 
   const featured = jobBoards.filter((board) =>
     ["LinkedIn Jobs", "Indeed", "Glassdoor", "Wellfound", "We Work Remotely", "SEEK"].includes(board.name),
@@ -107,10 +89,6 @@ export function DirectoryClient({ jobBoards }: DirectoryClientProps) {
             <div>
               <strong>{regions.length - 1}</strong>
               <span>regions</span>
-            </div>
-            <div>
-              <strong>{focuses.length - 1}</strong>
-              <span>search focuses</span>
             </div>
           </div>
         </div>
@@ -158,21 +136,12 @@ export function DirectoryClient({ jobBoards }: DirectoryClientProps) {
               ))}
             </select>
           </label>
-          <label>
-            <span>Focus</span>
-            <select value={focus} onChange={(event) => setFocus(event.target.value)}>
-              {focuses.map((item) => (
-                <option key={item}>{item}</option>
-              ))}
-            </select>
-          </label>
           <button
             type="button"
             className="clear-button"
             onClick={() => {
               setQuery("");
               setRegion("All");
-              setFocus("All");
             }}
           >
             Reset

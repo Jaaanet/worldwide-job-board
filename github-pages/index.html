@@ -192,7 +192,7 @@
         top: 0;
         z-index: 4;
         display: grid;
-        grid-template-columns: minmax(260px, 1fr) 210px 190px auto;
+        grid-template-columns: minmax(260px, 1fr) 210px auto;
         gap: 10px;
         align-items: end;
         padding: 12px;
@@ -338,7 +338,7 @@
         }
 
         .hero__panel {
-          grid-template-columns: repeat(3, minmax(0, 1fr));
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         .featured-grid,
@@ -404,7 +404,6 @@
           <div class="hero__panel" aria-label="Directory summary">
             <div><strong id="site-count">0</strong><span>sites listed</span></div>
             <div><strong id="region-count">0</strong><span>regions</span></div>
-            <div><strong id="focus-count">0</strong><span>search focuses</span></div>
           </div>
         </div>
       </section>
@@ -433,10 +432,6 @@
             <span>Region</span>
             <select id="region"></select>
           </label>
-          <label>
-            <span>Focus</span>
-            <select id="focus"></select>
-          </label>
           <button class="clear-button" id="reset" type="button">Reset</button>
         </div>
 
@@ -461,7 +456,6 @@
         "Latin America",
       ];
 
-      const focusOrder = ["All", "General", "Remote", "Tech", "Startup", "Campus", "Freelance", "Company research"];
 
       const broadCoverage = [
         "United States",
@@ -555,25 +549,20 @@
       const state = {
         query: "",
         region: "All",
-        focus: "All",
       };
 
       const searchInput = document.getElementById("search");
       const regionSelect = document.getElementById("region");
-      const focusSelect = document.getElementById("focus");
       const boardGrid = document.getElementById("board-grid");
       const featuredGrid = document.getElementById("featured-grid");
       const resultCount = document.getElementById("result-count");
 
       const regions = regionOrder.filter((item) => item === "All" || jobBoards.some((board) => board.region === item));
-      const focuses = focusOrder.filter((item) => item === "All" || jobBoards.some((board) => board.focus === item));
 
       document.getElementById("site-count").textContent = jobBoards.length;
       document.getElementById("region-count").textContent = regions.length - 1;
-      document.getElementById("focus-count").textContent = focuses.length - 1;
 
       regionSelect.innerHTML = regions.map((item) => `<option>${item}</option>`).join("");
-      focusSelect.innerHTML = focuses.map((item) => `<option>${item}</option>`).join("");
 
       featuredGrid.innerHTML = jobBoards
         .filter((board) => ["LinkedIn Jobs", "Indeed", "Glassdoor", "Wellfound", "We Work Remotely", "SEEK"].includes(board.name))
@@ -599,7 +588,7 @@
         const normalizedQuery = state.query.trim().toLowerCase();
         const filtered = jobBoards.filter((board) => {
           const searchable = [board.name, board.region, board.focus, board.type, board.goodFor, board.notes].join(" ").toLowerCase();
-          return matchesRegion(board) && (state.focus === "All" || board.focus === state.focus) && (!normalizedQuery || searchable.includes(normalizedQuery));
+          return matchesRegion(board) && (!normalizedQuery || searchable.includes(normalizedQuery));
         });
 
         resultCount.textContent = `${filtered.length} matching site${filtered.length === 1 ? "" : "s"}`;
@@ -641,18 +630,11 @@
         render();
       });
 
-      focusSelect.addEventListener("change", (event) => {
-        state.focus = event.target.value;
-        render();
-      });
-
       document.getElementById("reset").addEventListener("click", () => {
         state.query = "";
         state.region = "All";
-        state.focus = "All";
         searchInput.value = "";
         regionSelect.value = "All";
-        focusSelect.value = "All";
         render();
       });
 
